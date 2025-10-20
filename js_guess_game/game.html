@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>PS3 Retro JS Game</title>
+</head>
+<body>
+
+    <h1 style="color: #00008b;">The Retro Number Guess</h1>
+    <p style="font-size: 16px;">This game uses only very basic JavaScript and should work on the PS3 browser.</p>
+    <p style="font-size: 16px;">Click the button to start the game. The game will use pop-up boxes to ask for your guesses.</p>
+    
+    <hr>
+    
+    <button onclick="startGame()" style="padding: 10px 20px; font-size: 18px; background-color: #8b0000; color: white; border: none; border-radius: 5px;">
+        START THE RETRO GAME
+    </button>
+
+    <hr>
+    
+    <a href="../index.html" style="font-size: 16px;">Return to Main Hub</a>
+
+    <script type="text/javascript">
+        // Basic JavaScript from the pre-2008 era
+        
+        var MAX_TRIES = 5;
+        var MAX_NUMBER = 10;
+        
+        function startGame() {
+            // 1. Generate the random number (between 1 and MAX_NUMBER)
+            var randomNumber = Math.floor(Math.random() * MAX_NUMBER) + 1;
+            var guess = 0;
+            var tries = 0;
+            var isCorrect = false;
+
+            alert("I have chosen a secret number between 1 and " + MAX_NUMBER + ".\nYou have " + MAX_TRIES + " tries to guess it!");
+
+            // 2. Main Game Loop using 'while'
+            while (tries < MAX_TRIES && !isCorrect) {
+                tries++;
+                
+                // Get user input via a simple prompt box
+                var input = prompt("Guess #" + tries + ": Enter your number (1-" + MAX_NUMBER + ").");
+                
+                // Check for user cancelling or entering nothing
+                if (input === null || input.trim() === "") {
+                    alert("Game cancelled. Try again!");
+                    return; // Exit the function
+                }
+                
+                // Convert the input string to an integer
+                guess = parseInt(input);
+
+                // Check the guess
+                if (guess === randomNumber) {
+                    isCorrect = true;
+                    alert("🥳 SUCCESS! You guessed the number " + randomNumber + " in " + tries + " tries!");
+                } else if (guess < randomNumber) {
+                    alert("Too LOW! Tries left: " + (MAX_TRIES - tries));
+                } else if (guess > randomNumber) {
+                    alert("Too HIGH! Tries left: " + (MAX_TRIES - tries));
+                } else {
+                    // Handles non-numeric input
+                    alert("Please enter a valid number. Try again!");
+                    tries--; // Don't count this as a real try
+                }
+            }
+            
+            // 3. Game Over Condition
+            if (!isCorrect) {
+                alert("GAME OVER! You ran out of tries. The secret number was " + randomNumber + ".");
+            }
+        }
+    </script>
+
+</body>
+</html>

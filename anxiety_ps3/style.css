@@ -1,0 +1,8 @@
+body { background:#071019; color:#e6f7ff; font-family: Arial, Helvetica, sans-serif; padding:18px; }
+.wrap { max-width:760px; margin:0 auto; }
+h1 { color:#ffd166; }
+.scene { background:#0f1a22; padding:12px; border-radius:8px; border:1px solid #123; }
+.choices { margin-top:10px; }
+.btn { display:inline-block; background:#4CAF50; color:white; padding:8px 12px; margin-right:8px; border-radius:6px; border:none; font-size:14px; }
+.btn.small { background:#226; padding:6px 10px; }
+.note { color:#bcd; }
