@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The PS3 Vault Adventure</title>
+    <style>
+        /* Basic Styling for the PS3 Browser */
+        body {
+            background-color: #0d1117; /* Dark background */
+            color: #ffffff; /* White text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace for classic feel */
+            margin: 20px;
+            padding: 0;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        #game-container {
+            border: 2px solid #333;
+            padding: 15px;
+        }
+
+        #story-text {
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #1f6feb; /* PlayStation Blue */
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+        }
+
+        .option-button:hover, .option-button:focus {
+            background-color: #0c4da2; /* Darker blue on hover/focus */
+            outline: none;
+        }
+
+        .inventory-item {
+            color: #4CAF50; /* Green for items */
+        }
+
+        #inventory {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #333;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>THE PS3 VAULT ADVENTURE</h1>
+    <div id="story-text"></div>
+    <div id="options-container"></div>
+    <div id="inventory">Inventory: <span id="inventory-list">Empty</span></div>
+</div>
+
+<script>
+    // --- GAME STATE ---
+    let gameState = {
+        currentScene: 'start',
+        inventory: []
+    };
+
+    // --- GAME DATA (SCENES) ---
+    const scenes = {
+        'start': {
+            text: "You awaken in a dark, cold server room. The air smells of ozone and dust. An old, humming machine with a familiar logo sits in the corner. You see a flickering terminal and a heavy metal door.",
+            options: [
+                { text: "Examine the terminal.", next: 'terminal' },
+                { text: "Try the metal door.", next: 'metalDoor' }
+            ]
+        },
+        'terminal': {
+            text: "The terminal flickers to life. It displays a single line of text: 'MEMORY CARD MISSING. INITIATE PROTOCOL?'",
+            options: [
+                { text: "Initiate Protocol.", next: 'protocolFail' },
+                { text: "Look for a memory card.", next: 'findMemoryCard' },
+                { text: "Go back to the room.", next: 'start' }
+            ]
+        },
+        'protocolFail': {
+            text: "The terminal flashes 'ERROR: ACCESS DENIED.' A low alarm sound starts to pulse, and the lights turn red. You wasted precious time!",
+            options: [
+                { text: "Run back to the metal door.", next: 'metalDoor' }
+            ]
+        },
+        'findMemoryCard': {
+            text: "Searching the floor near the humming machine, your hand brushes against something small and plastic. It's a <span class='inventory-item'>'Memory Card'</span>! You slip it into your pocket.",
+            action: () => gameState.inventory.push('Memory Card'),
+            options: [
+                { text: "Return to the terminal.", next: 'useTerminal' },
+                { text: "Try the metal door.", next: 'metalDoor' }
+            ]
+        },
+        'useTerminal': {
+            text: "You insert the Memory Card into the terminal. The screen changes: 'PROTOCOL INITIATED. UNLOCKING VAULT.' A loud CLUNK echoes from the metal door.",
+            condition: () => gameState.inventory.includes('Memory Card'),
+            options: [
+                { text: "Proceed through the now unlocked metal door.", next: 'hallway' }
+            ]
+        },
+        'hallway': {
+            text: "The metal door leads to a narrow, brightly lit hallway. At the far end, you see a pedestal with a shimmering item on it. Halfway down the hall, a laser grid blocks the path.",
+            options: [
+                { text: "Attempt to jump over the laser grid.", next: 'laserFail' },
+                { text: "Search the walls for a control panel.", next: 'findPanel' }
+            ]
+        },
+        'findPanel': {
+            text: "You find a hidden panel with a large red button labeled 'DISABLE'.",
+            options: [
+                { text: "Press the DISABLE button.", next: 'win' },
+                { text: "Leave it alone and go back.", next: 'hallway' }
+            ]
+        },
+        'laserFail': {
+            text: "The laser grid is too high! The moment you touch it, a powerful electric shock knocks you back. You are stunned and fail.",
+            options: [
+                { text: "Start over.", next: 'start' }
+            ]
+        },
+        'metalDoor': {
+            text: "The heavy metal door is locked tight. It requires a digital key and a sequence to open.",
+            condition: () => !gameState.inventory.includes('Memory Card'),
+            options: [
+                { text: "Go back to the room.", next: 'start' }
+            ]
+        },
+        'win': {
+            text: "You press the button. The laser grid vanishes! You walk up to the pedestal and claim the shimmering artifact: The legendary **DUALSHOCK 3 CONTROLLER**! You have escaped the vault! **CONGRATULATIONS!**",
+            options: [
+                { text: "Play Again?", next: 'start' }
+            ]
+        },
+        // Fallback for when the required item is missing (e.g. at metalDoor)
+        'default_locked': {
+            text: "The heavy metal door is locked tight. It requires a digital key and a sequence to open. You need something to open it.",
+            options: [
+                { text: "Go back to the room.", next: 'start' }
+            ]
+        }
+    };
+
+    // --- CORE GAME FUNCTIONS ---
+
+    function updateInventory() {
+        const list = document.getElementById('inventory-list');
+        list.innerHTML = gameState.inventory.length > 0 ? gameState.inventory.map(i => `<span class="inventory-item">${i}</span>`).join(', ') : 'Empty';
+    }
+
+    function loadScene(sceneId) {
+        let scene = scenes[sceneId];
+
+        // Check for specific conditions and override the scene if needed
+        if (sceneId === 'metalDoor' && !gameState.inventory.includes('Memory Card')) {
+            scene = scenes['default_locked'];
+        } else if (sceneId === 'metalDoor' && gameState.inventory.includes('Memory Card')) {
+             sceneId = 'hallway'; // Shortcut once the item is found and the door is 'unlocked'
+             scene = scenes[sceneId];
+        } else if (sceneId === 'useTerminal' && !gameState.inventory.includes('Memory Card')) {
+            // Should be impossible via the normal path, but for safety:
+            return loadScene('terminal');
+        }
+
+        // Apply action if defined (e.g., adding an item)
+        if (scene.action && sceneId !== gameState.currentScene) {
+            scene.action();
+        }
+
+        // Update the current state
+        gameState.currentScene = sceneId;
+
+        // Update Text
+        document.getElementById('story-text').innerHTML = scene.text;
+
+        // Update Options
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        scene.options.forEach(option => {
+            // Check for option-specific conditions
+            if (option.condition && !option.condition()) {
+                return; // Skip this option if condition is not met
+            }
+
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.textContent = option.text;
+            button.onclick = () => loadScene(option.next);
+            optionsContainer.appendChild(button);
+        });
+
+        // Update Inventory Display
+        updateInventory();
+    }
+
+    // --- GAME START ---
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Reset state for a fresh start on page load
+        gameState.inventory = [];
+        loadScene('start');
+    });
+
+    // Handle "Start Over" logic
+    scenes.start.action = () => { gameState.inventory = []; }; // Clear inventory if returning to start
+    
+</script>
+
+</body>
+</html>

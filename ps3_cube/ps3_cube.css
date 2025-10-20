@@ -1,0 +1,24 @@
+/* PS3-friendly cube styles */
+.scene{width:480px;height:360px;perspective:800px;margin-top:12px;border:1px solid rgba(255,255,255,0.05);padding:8px}
+.cube{width:160px;height:160px;position:relative;margin:30px auto;transform-style:preserve-3d;transition:transform 0.05s linear}
+.face{position:absolute;width:160px;height:160px;line-height:160px;text-align:center;font-weight:bold;color:#041018;border:2px solid rgba(0,0,0,0.2);box-sizing:border-box}
+.face-front{background:#ffd166;transform:translateZ(80px)}
+.face-back{background:#ff7b7b;transform:rotateY(180deg) translateZ(80px)}
+.face-right{background:#8ad4ff;transform:rotateY(90deg) translateZ(80px)}
+.face-left{background:#b39cff;transform:rotateY(-90deg) translateZ(80px)}
+.face-top{background:#c1fba4;transform:rotateX(90deg) translateZ(80px)}
+.face-bottom{background:#ffd6a5;transform:rotateX(-90deg) translateZ(80px)}
+
+/* Basic responsive for narrow screens */
+@media screen and (max-width:520px){
+  .scene{width:100%;height:260px}
+  .cube{width:120px;height:120px}
+  .face{width:120px;height:120px;line-height:120px}
+}
+
+/* Hide cube if 'no-3d' is present on body */
+body.no-3d .scene{display:none}
+body.no-3d canvas{display:block}
+
+/* FPS badge */
+#fps{display:inline-block;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,0.28);color:#bfffcf;font-weight:700;border:1px solid rgba(255,255,255,0.04)}

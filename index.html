@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>PS3 Local Server</title>
+    
+    <link rel="stylesheet" href="cave_adventure/assets/style.css">
+    <style type="text/css">
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white !important;
+            text-decoration: none;
+            border: 2px solid;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        /* Style for the general external link button (Orange) */
+        .ext-button {
+            background-color: #ff4500; /* Orange */
+            border-color: #cc3700;
+        }
+        /* Style for the new Direct Video button */
+        .video-button {
+            background-color: #008000; /* Dark Green */
+            border-color: #006400;
+        }
+        /* Style for the new JS Demo button (Light Green) */
+        .js-button {
+            background-color: #4CAF50; /* Light Green */
+            border-color: #38763a;
+        }
+        /* Style for the purple test button */
+        .test-button {
+            background-color: #aa00cc; /* Purple */
+            border-color: #770099;
+        }
+        /* NEW RED COLOR COMMAND */
+        .red-button {
+            background-color: #cc0000; /* Bright Red */
+            border-color: #990000;      /* Darker Red border */
+        }
+        .button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="background: linear-gradient(135deg,#1b2735,#0f2027); padding:18px; border-radius:8px; color:#e6f7ff;">
+        <h1 style="margin:0; font-size:2.2em; color:#ffd166;">Welcome to the PS3 Fun Hub!</h1>
+        <p style="margin:6px 0 0; color:#d0eaff;">A tiny, joyful collection of local pages and playful things to try on your PS3 browser.</p>
+        <p style="margin:8px 0 0; color:#bae61c; font-size:0.95em;">Local time: <span id="local-time">--</span></p>
+    </div>
+    <br>
+
+        <!-- Ultra-compatible inline clock fallback for older browsers (PS3) -->
+        <script>
+        (function(){
+            try{
+                var el = document.getElementById('local-time');
+                if(!el) return;
+                function two(n){ return (n<10? '0'+n : ''+n); }
+                function tick(){
+                    var d = new Date();
+                    var date = d.getFullYear() + '-' + two(d.getMonth()+1) + '-' + two(d.getDate());
+                    var time = two(d.getHours()) + ':' + two(d.getMinutes()) + ':' + two(d.getSeconds());
+                    el.innerText = date + ' ' + time;
+                }
+                tick();
+                setInterval(tick,1000);
+            }catch(e){ /* ignore */ }
+        })();
+        </script>
+
+    <main>
+        <section>
+            <h2 style="color:#ffd166;">Quick Picks</h2>
+            <p class="note">Tap any button to open. If your PS3 browser is old, everything still works as plain links.</p>
+
+            <div style="margin-top:12px;">
+                <a href="cave_adventure/start.html" class="button js-button">Cave Adventure — Play</a>
+                <a href="anxiety_ps3/index.html" class="button" style="background:#6C5CE7; border-color:#4b3bb0;">Anxiety — Tiny Demo</a>
+                <a href="ps3_cube/ps3_cube.html" class="button js-button" style="background:#2196F3;border-color:#1769aa;">PS3 Cube Stress Test</a>
+                <a href="html/Test.html" class="button test-button">Experiment / Test Page</a>
+                <a href="html/aboutMe.html" class="button red-button">About the Creator</a>
+            </div>
+        </section>
+
+        <section style="margin-top:18px;">
+            <h2 style="color:#ffd166;">Explore</h2>
+            <div>
+                <a href="https://edw590.github.io/Console-news-on-consoles/" class="button ext-button">Console News</a>
+                <a href="https://store.brewology.com/homebrew.php?lang=" class="button ext-button">Brewology Store</a>
+            </div>
+        </section>
+
+        <section style="margin-top:18px;">
+            <h2 style="color:#ffd166;">A Little Local Image</h2>
+            <img src="img/myimage.jpg" alt="A local image" width="240" style="border:2px solid #222; border-radius:6px;"/>
+        </section>
+
+        <hr>
+        <footer style="color:#cfeaff; font-size:0.95em;">
+            <p>Made to have some fun with the PS3 browser. Try the Cave Adventure for a short text-RPG with puzzles!</p>
+        </footer>
+    </main>
+
+    <script src="cave_adventure/assets/game.js"></script>
+</body>
+</html>
