@@ -13,9 +13,31 @@ def get_host_ip():
         s.close()
     return IP
 
+class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def log_error(self, format, *args):
+        # Check if this is a TLS handshake attempt
+        if isinstance(args[0], str) and "Bad request version" in args[0]:
+            if not hasattr(self.server, 'showed_tls_notice'):
+                print("\nNote: Received HTTPS/TLS connection attempt. This is a plain HTTP server.")
+                print("Make sure to use http:// not https:// when connecting.")
+                print(f"Correct URL: http://{HOST_IP}:{PORT}")
+                self.server.showed_tls_notice = True
+            return
+        # Log other errors normally
+        super().log_error(format, *args)
+
+    def log_message(self, format, *args):
+        # Filter out TLS handshake noise
+        if "code 400, message Bad request version" in format % args:
+            return
+        if '"\\x16\\x03\\x01' in format % args:  # TLS handshake prefix
+            return
+        # Log other messages normally
+        super().log_message(format, *args)
+
 # --- 2. Configuration ---
 PORT = 8000
-Handler = http.server.SimpleHTTPRequestHandler
+Handler = QuietHandler  # Use our quieter handler
 HOST_IP = get_host_ip()
 SERVER_URL = f"http://{HOST_IP}:{PORT}"
 
